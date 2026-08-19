@@ -1,14 +1,13 @@
-package com.labexam.unscramble
+package com.example.unscramble
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -30,6 +29,23 @@ fun UnscrambleTheme(content: @Composable () -> Unit) {
 
 @Composable
 fun GameScreen() {
+    val words = listOf("CAT", "DOG", "BOOK")
+
+    var currentWordIndex by remember { mutableIntStateOf(0) }
+    var userAnswer by remember { mutableStateOf("") }
+    var score by remember { mutableIntStateOf(0) }
+
+    val correctAnswer = words[currentWordIndex]
+
+    // Scrambles the current word whenever the index changes
+    val scrambledWord = remember(currentWordIndex) {
+        val chars = correctAnswer.toCharArray()
+        while (String(chars) == correctAnswer && correctAnswer.length > 1) {
+            chars.shuffle()
+        }
+        String(chars)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,30 +55,37 @@ fun GameScreen() {
     ) {
         Text(text = "UNSCRAMBLE", fontSize = 30.sp)
         Spacer(modifier = Modifier.height(32.dp))
-        Text(text = "TAC", fontSize = 40.sp)
+
+        // Display the scrambled word instead of the answer
+        Text(text = scrambledWord, fontSize = 40.sp)
+
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Unscramble the word!")
         Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            label = { Text("Enter your answer") }
+            value = userAnswer,
+            onValueChange = { userAnswer = it },
+            label = { Text("Enter your answer") },
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = {}) {
+        Button(
+            onClick = {
+                if (userAnswer.trim().equals(correctAnswer, ignoreCase = true)) {
+                    score++
+                    userAnswer = ""
+                    if (currentWordIndex < words.size - 1) {
+                        currentWordIndex++
+                    }
+                }
+            }
+        ) {
             Text("SUBMIT")
         }
-        Spacer(modifier = Modifier.height(32.dp))
-        Text(text = "Score: 0")
-    }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GameScreenPreview() {
-    UnscrambleTheme {
-        GameScreen()
+        Spacer(modifier = Modifier.height(32.dp))
+        Text(text = "Score: $score", fontSize = 20.sp)
     }
 }
