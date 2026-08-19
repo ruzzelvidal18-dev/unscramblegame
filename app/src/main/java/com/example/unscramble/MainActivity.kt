@@ -1,4 +1,4 @@
-package com.example.unscramble
+package com.labexam.unscramble
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -6,12 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -33,11 +30,6 @@ fun UnscrambleTheme(content: @Composable () -> Unit) {
 
 @Composable
 fun GameScreen() {
-    // 1. Initialized as empty string so the field doesn't start pre-filled
-    var userAnswer by remember { mutableStateOf("") }
-    val correctAnswer = "CAT"
-    var score by remember { mutableStateOf(0) }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,27 +45,24 @@ fun GameScreen() {
         Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
-            value = userAnswer,
-            onValueChange = { userAnswer = it },
-            label = { Text("Enter your answer") },
-            singleLine = true
+            value = "",
+            onValueChange = {},
+            label = { Text("Enter your answer") }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
-        Button(
-            onClick = {
-                // 2. Ignores spaces and case differences when comparing
-                if (userAnswer.trim().equals(correctAnswer, ignoreCase = true)) {
-                    score++
-                    userAnswer = "" // Clear input field on correct guess
-                }
-            }
-        ) {
+        Button(onClick = {}) {
             Text("SUBMIT")
         }
-
         Spacer(modifier = Modifier.height(32.dp))
-        // 3. Added '$' to display the actual variable value
-        Text(text = "Score: $score", fontSize = 20.sp)
+        Text(text = "Score: 0")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GameScreenPreview() {
+    UnscrambleTheme {
+        GameScreen()
     }
 }
