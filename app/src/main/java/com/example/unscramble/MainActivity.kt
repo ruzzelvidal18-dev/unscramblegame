@@ -15,37 +15,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             UnscrambleTheme {
-
                 GameScreen()
-
             }
-
         }
-
     }
-
 }
-
-
 
 @Composable
 fun UnscrambleTheme(content: @Composable () -> Unit) {
     MaterialTheme(content = content)
-
 }
 
 @Composable
 fun GameScreen() {
-    var userAnswer by remember {
-
-        mutableStateOf("CAT")
-    }
+    // 1. Initialized as empty string so the field doesn't start pre-filled
+    var userAnswer by remember { mutableStateOf("") }
+    val correctAnswer = "CAT"
+    var score by remember { mutableStateOf(0) }
 
     Column(
         modifier = Modifier
@@ -53,10 +44,7 @@ fun GameScreen() {
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-
-    )
-    {
-
+    ) {
         Text(text = "UNSCRAMBLE", fontSize = 30.sp)
         Spacer(modifier = Modifier.height(32.dp))
         Text(text = "TAC", fontSize = 40.sp)
@@ -64,24 +52,28 @@ fun GameScreen() {
         Text(text = "Unscramble the word!")
         Spacer(modifier = Modifier.height(24.dp))
 
-
-
         OutlinedTextField(
             value = userAnswer,
             onValueChange = { userAnswer = it },
-            label = { Text("Enter your answer") }
-
+            label = { Text("Enter your answer") },
+            singleLine = true
         )
 
         Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = { /* TODO: Handle submit */ }) {
+        Button(
+            onClick = {
+                // 2. Ignores spaces and case differences when comparing
+                if (userAnswer.trim().equals(correctAnswer, ignoreCase = true)) {
+                    score++
+                    userAnswer = "" // Clear input field on correct guess
+                }
+            }
+        ) {
             Text("SUBMIT")
-
         }
 
         Spacer(modifier = Modifier.height(32.dp))
-        Text(text = "Score: 0")
-
+        // 3. Added '$' to display the actual variable value
+        Text(text = "Score: $score", fontSize = 20.sp)
     }
-
 }
