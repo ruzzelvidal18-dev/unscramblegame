@@ -34,17 +34,12 @@ fun GameScreen() {
     var currentWordIndex by remember { mutableIntStateOf(0) }
     var userAnswer by remember { mutableStateOf("") }
     var score by remember { mutableIntStateOf(0) }
-
     val correctAnswer = words[currentWordIndex]
-
-    // Scrambles the current word whenever the index changes
-    val scrambledWord = remember(currentWordIndex) {
-        val chars = correctAnswer.toCharArray()
-        while (String(chars) == correctAnswer && correctAnswer.length > 1) {
-            chars.shuffle()
-        }
-        String(chars)
+    var scrambledWord by remember {
+        mutableStateOf(words[0].toList().shuffled().joinToString(""))
     }
+
+
 
     Column(
         modifier = Modifier
@@ -76,8 +71,15 @@ fun GameScreen() {
                 if (userAnswer.trim().equals(correctAnswer, ignoreCase = true)) {
                     score++
                     userAnswer = ""
+
                     if (currentWordIndex < words.size - 1) {
                         currentWordIndex++
+
+                        userAnswer = ""
+                        scrambledWord = words[currentWordIndex]
+                            .toList()
+                            .shuffled()
+                            .joinToString("")
                     }
                 }
             }
