@@ -10,6 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.unscramble.ui.theme.UnscrambleTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.unscramble.GameViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,22 +26,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun UnscrambleTheme(content: @Composable () -> Unit) {
-    MaterialTheme(content = content)
-}
-
-@Composable
 fun GameScreen() {
-    val words = listOf("CAT", "DOG", "BOOK")
 
-    var currentWordIndex by remember { mutableIntStateOf(0) }
-    var userAnswer by remember { mutableStateOf("") }
-    var score by remember { mutableIntStateOf(0) }
-    val correctAnswer = words[currentWordIndex]
-    var scrambledWord by remember {
-        mutableStateOf(words[0].toList().shuffled().joinToString(""))
-    }
-
+    val viewModel: GameViewModel = viewModel()
 
 
     Column(
@@ -47,47 +37,39 @@ fun GameScreen() {
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    ) {
+
+    )
+    {
+
         Text(text = "UNSCRAMBLE", fontSize = 30.sp)
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Display the scrambled word instead of the answer
-        Text(text = scrambledWord, fontSize = 40.sp)
+    Text(
+        text = viewModel.words[viewModel.currentWordIndex],
+        fontSize = 40.sp)
 
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Unscramble the word!")
         Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
-            value = userAnswer,
-            onValueChange = { userAnswer = it },
+            value = viewModel.userAnswer,
+            onValueChange = { viewModel.userAnswer = it },
             label = { Text("Enter your answer") },
             singleLine = true
         )
 
         Spacer(modifier = Modifier.height(24.dp))
         Button(
-            onClick = {
-                if (userAnswer.trim().equals(correctAnswer, ignoreCase = true)) {
-                    score++
-                    userAnswer = ""
+            onClick = {})
 
-                    if (currentWordIndex < words.size - 1) {
-                        currentWordIndex++
 
-                        userAnswer = ""
-                        scrambledWord = words[currentWordIndex]
-                            .toList()
-                            .shuffled()
-                            .joinToString("")
-                    }
-                }
-            }
-        ) {
-            Text("SUBMIT")
+            {
+            Text("SUBMIT")}
         }
-
         Spacer(modifier = Modifier.height(32.dp))
-        Text(text = "Score: $score", fontSize = 20.sp)
-    }
+    Text(
+        text = "Score: ${viewModel.score}"
+
+    )
 }
